@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: analytics-postgres
+    environment:
+      POSTGRES_USER: analytics_user
+      POSTGRES_PASSWORD: analytics_password
+      POSTGRES_DB: analytics_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analytics_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    container_name: analytics-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: analytics_user
+      MONGO_INITDB_ROOT_PASSWORD: analytics_password
+      MONGO_INITDB_DATABASE: analytics_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Uncomment when backend is ready
+  # backend:
+  #   build: ./backend
+  #   container_name: analytics-backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     DATABASE_URL: postgresql://analytics_user:analytics_password@postgres:5432/analytics_db
+  #     MONGODB_URL: mongodb://analytics_user:analytics_password@mongodb:27017/
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     mongodb:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./backend:/app
+  #   command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+  mongo_data:
