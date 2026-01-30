@@ -455,28 +455,172 @@ mongosh mongodb://analytics_user:analytics_password@localhost:27017/
 docker-compose exec mongodb mongosh -u analytics_user -p analytics_password
 ```
 
-### Method 2: GUI Database Tools
+### Method 2: GUI Database Tools (Recommended for Beginners)
 
-**PostgreSQL:**
-- [pgAdmin](https://www.pgadmin.org/) - Free, feature-rich
-- [TablePlus](https://tableplus.com/) - Beautiful, Mac-native (free tier available)
-- [DBeaver](https://dbeaver.io/) - Universal database tool
+#### DBeaver for PostgreSQL
 
-**Connection details:**
-- Host: `localhost`
-- Port: `5432`
-- User: `analytics_user`
-- Password: `analytics_password`
-- Database: `analytics_db`
+**Step 1: Install DBeaver**
+- Download from: https://dbeaver.io/download/
+- Or install via Homebrew: `brew install --cask dbeaver-community`
 
-**MongoDB:**
-- [MongoDB Compass](https://www.mongodb.com/products/compass) - Official GUI
-- [Studio 3T](https://studio3t.com/) - Advanced features
+**Step 2: Open DBeaver and Create Connection**
+1. Click **Database** → **New Database Connection**
+2. Or click the **plug icon** with a green plus sign in the toolbar
 
-**Connection string:**
+**Step 3: Select PostgreSQL**
+1. Find and click **PostgreSQL** in the list
+2. Click **Next**
+
+**Step 4: Enter Connection Details**
+```
+Host:      localhost
+Port:      5432
+Database:  analytics_db
+Username:  analytics_user
+Password:  analytics_password
+```
+
+**Step 5: Test Connection**
+1. Click **Test Connection** button
+2. If first time, DBeaver will ask to download the PostgreSQL driver
+3. Click **Download** and wait for it to complete
+4. Should show "Connected" message ✅
+5. Click **Finish**
+
+**Step 6: Explore Your Data**
+1. In the left panel, expand the connection tree:
+   - `analytics_db` → `Schemas` → `public` → `Tables`
+2. You'll see `test_persistence` table (from our test)
+3. Right-click the table → **View Data**
+4. You should see the 2 test rows we created earlier
+
+**Common DBeaver Actions:**
+- **View data:** Right-click table → View Data
+- **Run SQL query:** Click SQL Editor icon (or press F3)
+- **Export data:** Right-click table → Export Data
+
+---
+
+#### MongoDB Compass for MongoDB
+
+**Step 1: Install MongoDB Compass**
+- Download from: https://www.mongodb.com/try/download/compass
+- Or install via Homebrew: `brew install --cask mongodb-compass`
+
+**Step 2: Open MongoDB Compass**
+
+**Step 3: Create New Connection**
+1. Click **New Connection** button (or the green "Connect" button)
+
+**Step 4: Enter Connection String**
+
+**Option A: Use Connection String (Easiest)**
+
+Paste this entire string in the connection box:
 ```
 mongodb://analytics_user:analytics_password@localhost:27017/
 ```
+
+**Option B: Use Advanced Connection Form**
+1. Click **"Fill in connection fields individually"**
+2. Enter:
+   ```
+   Host:                    localhost
+   Port:                    27017
+   Authentication:          Username/Password
+   Username:                analytics_user
+   Password:                analytics_password
+   Authentication Database: admin
+   ```
+
+**Step 5: Save and Connect**
+1. Click **Save & Connect**
+2. Give it a name: "Local Analytics DB"
+3. Click **Connect**
+
+**Step 6: Explore Your Data**
+1. You'll see default databases: `admin`, `config`, `local`
+2. Currently no custom data (we haven't used MongoDB yet in our app)
+3. You can create a test database:
+   - Click **"Create Database"**
+   - Database name: `test_db`
+   - Collection name: `test_collection`
+   - Click **Create Database**
+
+**Common MongoDB Compass Actions:**
+- **View collections:** Click database → click collection
+- **Insert document:** Click "Add Data" → Insert Document
+- **Query data:** Use the filter bar at the top
+
+---
+
+#### Quick Connection Reference
+
+**PostgreSQL (DBeaver):**
+```
+Host: localhost
+Port: 5432
+User: analytics_user
+Password: analytics_password
+Database: analytics_db
+```
+
+**MongoDB (Compass):**
+```
+Connection String:
+mongodb://analytics_user:analytics_password@localhost:27017/
+
+OR
+
+Host: localhost:27017
+Username: analytics_user
+Password: analytics_password
+Auth Database: admin
+```
+
+---
+
+#### Troubleshooting GUI Connections
+
+**"Connection refused" error?**
+1. Make sure Docker containers are running:
+   ```bash
+   cd ~/Desktop/data-analytics-dashboard
+   docker-compose ps
+   ```
+2. Should show both containers as "Running"
+3. If not:
+   ```bash
+   docker-compose up -d
+   ```
+
+**DBeaver: "Driver not found" error?**
+1. When testing connection, click **Download** when prompted
+2. DBeaver will automatically download the PostgreSQL driver
+3. Try connection again
+
+**MongoDB Compass: "Authentication failed"?**
+1. Make sure you're using `admin` as the Authentication Database
+2. Double-check username: `analytics_user` (not `admin`)
+3. Double-check password: `analytics_password`
+
+**Can't see data in DBeaver?**
+1. Make sure you're looking in the right place:
+   - Connection → `analytics_db` → `Schemas` → `public` → `Tables`
+2. Refresh the database tree (right-click → Refresh)
+
+---
+
+#### Alternative GUI Tools
+
+**Other PostgreSQL Tools:**
+- [pgAdmin](https://www.pgadmin.org/) - Free, feature-rich, web-based
+- [TablePlus](https://tableplus.com/) - Beautiful, Mac-native ($$$, free tier available)
+- [Postico](https://eggerapps.at/postico/) - Mac-only, simple and elegant
+
+**Other MongoDB Tools:**
+- [Studio 3T](https://studio3t.com/) - Advanced features, free trial
+- [Robo 3T](https://robomongo.org/) - Lightweight, free
 
 ### Method 3: Backup/Export Data
 
